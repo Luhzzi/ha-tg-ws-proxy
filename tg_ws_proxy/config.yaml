@@ -1,5 +1,5 @@
 name: "TG WS Proxy"
-version: "1.0.0"
+version: "1.0.1"
 slug: "tg_ws_proxy"
 description: "Локальный MTProto-прокси для Telegram Desktop, ускоряющий подключение через WebSocket (на основе Flowseal/tg-ws-proxy)"
 url: "https://github.com/Flowseal/tg-ws-proxy"
@@ -7,6 +7,7 @@ arch:
   - amd64
   - aarch64
   - armv7
+  - armhf
 init: false
 startup: services
 boot: auto
@@ -22,3 +23,4 @@ schema:
   secret: "str?"
   dc_ips: "str"
   cf_worker: "str?"
+image: "ghcr.io/flowseal/tg-ws-proxy:latest"
