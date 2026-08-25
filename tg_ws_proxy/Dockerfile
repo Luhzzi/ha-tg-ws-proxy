@@ -25,8 +25,7 @@ ARG TG_WS_PROXY_REF=main
 RUN git clone --depth 1 --branch "${TG_WS_PROXY_REF}" "${TG_WS_PROXY_REPO}" /tmp/src \
     && cp -r /tmp/src/proxy ./proxy \
     && cp -r /tmp/src/utils ./utils \
-    && cp /tmp/src/docs/README.md ./docs/ 2>/dev/null || true \
-    && cp /tmp/src/LICENSE ./LICENSE 2>/dev/null || true \
+    && cp /tmp/src/LICENSE ./LICENSE \
     && rm -rf /tmp/src
 
 FROM python:3.12-slim AS runtime
@@ -42,13 +41,14 @@ RUN apt-get update \
     && useradd --system --gid app --create-home --home-dir /home/app app
 
 WORKDIR /app
+
+# Копируем все из builder
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app/proxy ./proxy
 COPY --from=builder /app/utils ./utils
-COPY --from=builder /app/docs ./docs 2>/dev/null || true
-COPY --from=builder /app/LICENSE ./LICENSE 2>/dev/null || true
+COPY --from=builder /app/LICENSE ./LICENSE
 
-# Копируем скрипт запуска для Supervisor
+# Копируем скрипт запуска
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
@@ -56,6 +56,6 @@ USER app
 
 EXPOSE 1443/tcp
 
-# Используем наш run.sh, который читает options.json
+# Используем наш run.sh
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/run.sh"]

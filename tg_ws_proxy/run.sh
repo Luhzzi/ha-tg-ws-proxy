@@ -39,15 +39,14 @@ if [ -n "$CF_WORKER" ] && [ "$CF_WORKER" != "null" ] && [ "$CF_WORKER" != "" ]; 
 fi
 
 echo "[tg_ws_proxy] Starting with arguments: $ARGS"
-echo "[tg_ws_proxy] Working directory: $(pwd)"
-echo "[tg_ws_proxy] Python path: $(which python)"
 
 # Проверяем наличие скрипта
 if [ ! -f "proxy/tg_ws_proxy.py" ]; then
     echo "[tg_ws_proxy] ERROR: proxy/tg_ws_proxy.py not found!"
+    echo "[tg_ws_proxy] Contents of /app:"
     ls -la
     exit 1
 fi
 
 # Запускаем прокси
-exec /opt/venv/bin/python -u proxy/tg_ws_proxy.py $ARGS
+exec python -u proxy/tg_ws_proxy.py $ARGS
