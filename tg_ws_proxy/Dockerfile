@@ -16,10 +16,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
-# Устанавливаем зависимости
 RUN "$VIRTUAL_ENV/bin/pip" install cryptography==46.0.5 certifi
 
-# Клонируем оригинальный репозиторий
 ARG TG_WS_PROXY_REPO=https://github.com/Flowseal/tg-ws-proxy.git
 ARG TG_WS_PROXY_REF=main
 RUN git clone --depth 1 --branch "${TG_WS_PROXY_REF}" "${TG_WS_PROXY_REPO}" /tmp/src \
@@ -42,13 +40,11 @@ RUN apt-get update \
 
 WORKDIR /app
 
-# Копируем все из builder
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app/proxy ./proxy
 COPY --from=builder /app/utils ./utils
 COPY --from=builder /app/LICENSE ./LICENSE
 
-# Копируем скрипт запуска
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 
@@ -56,6 +52,5 @@ USER app
 
 EXPOSE 1443/tcp
 
-# Используем наш run.sh
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/run.sh"]
