@@ -23,7 +23,6 @@ ARG TG_WS_PROXY_REF=main
 RUN git clone --depth 1 --branch "${TG_WS_PROXY_REF}" "${TG_WS_PROXY_REPO}" /tmp/src \
     && cp -r /tmp/src/proxy ./proxy \
     && cp -r /tmp/src/utils ./utils \
-    && cp /tmp/src/LICENSE ./LICENSE \
     && rm -rf /tmp/src
 
 FROM python:3.12-slim AS runtime
@@ -34,21 +33,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends tini ca-certificates jq \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd --system app \
-    && useradd --system --gid app --create-home --home-dir /home/app app
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app/proxy ./proxy
 COPY --from=builder /app/utils ./utils
-COPY --from=builder /app/LICENSE ./LICENSE
 
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
-
-USER app
 
 EXPOSE 1443/tcp
 
